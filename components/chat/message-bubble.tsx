@@ -20,7 +20,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     <div className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
       <div
         className={`max-w-[80%] rounded-lg p-4 ${
-          message.type === "user" ? "bg-secondary text-secondary-foreground" : "bg-primary text-primary-foreground"
+          message.type === "user" ? "bg-secondary text-secondary-foreground" : "bg-card text-card-foreground border border-border"
         }`}
       >
         <p className="text-sm leading-relaxed">{message.content}</p>

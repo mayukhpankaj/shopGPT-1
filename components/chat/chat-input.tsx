@@ -34,8 +34,8 @@ export function ChatInput({ inputValue, setInputValue, onSubmit, isLoading, isNe
             <Input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Type your message..."
-              className="flex-1 bg-input border-border focus:ring-2 focus:ring-ring"
+              placeholder="what are you shopping today ?"
+              className="flex-1 bg-input border-border focus:ring-2 focus:ring-ring placeholder:text-gray-400"
               disabled={isLoading}
             />
             <Button

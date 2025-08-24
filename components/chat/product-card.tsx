@@ -23,16 +23,17 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
     onAddToCart?.(product)
   }
 
+  console.log(product)
   return (
     <div
-      className="bg-card rounded-lg p-4 border hover:shadow-lg transition-all duration-200 cursor-pointer group"
+      className="bg-card rounded-lg p-5 border hover:shadow-lg transition-all duration-200 cursor-pointer group min-h-[320px] flex flex-col"
       onClick={handleViewProduct}
     >
-      <div className="relative overflow-hidden rounded-md mb-3">
+      <div className="relative overflow-hidden rounded-md mb-4">
         <img
-          src={product.image || "/placeholder.svg?height=128&width=200&query=product"}
+          src={product.image || "/placeholder.svg?height=160&width=240&query=product"}
           alt={product.name}
-          className="w-full h-32 object-cover transition-transform duration-200 group-hover:scale-105"
+          className="w-full h-40 object-cover transition-transform duration-200 group-hover:scale-105"
           loading="lazy"
         />
         {product.category && (
@@ -40,12 +41,12 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
         )}
       </div>
 
-      <div className="space-y-2">
-        <h3 className="font-medium text-card-foreground line-clamp-1 group-hover:text-accent transition-colors">
+      <div className="flex flex-col flex-1 space-y-3">
+        <h3 className="font-medium text-card-foreground line-clamp-2 group-hover:text-accent transition-colors text-base leading-tight">
           {product.name}
         </h3>
 
-        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">{product.description}</p>
+        {/* <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed flex-1">{product.description}</p> */}
 
         {product.rating && (
           <div className="flex items-center gap-1">
@@ -63,7 +64,7 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
           </div>
         )}
 
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center justify-between pt-2 mt-auto">
           <div className="flex flex-col">
             <span className="font-semibold text-card-foreground text-lg">${product.price}</span>
             {product.originalPrice && product.originalPrice > product.price && (
@@ -76,13 +77,13 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
               size="sm"
               variant="outline"
               onClick={handleAddToCart}
-              className="hover:bg-accent hover:text-accent-foreground transition-colors bg-transparent"
+              className="hover:bg-accent hover:text-accent-foreground transition-colors bg-transparent px-2"
             >
               <ShoppingCart className="h-3 w-3" />
             </Button>
             <Button
               size="sm"
-              className="bg-accent hover:bg-accent/90 text-accent-foreground"
+              className="bg-accent hover:bg-accent/90 text-accent-foreground px-3"
               onClick={handleViewProduct}
             >
               View
