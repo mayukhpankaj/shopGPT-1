@@ -1,11 +1,11 @@
 "use client"
 
-import type React from "react"
-
+import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Star, ShoppingCart } from "lucide-react"
 import type { Product } from "@/types/chat"
+import { ProductModal } from "@/components/ui/product-modal"
 
 interface ProductCardProps {
   product: Product
@@ -14,7 +14,11 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCardProps) {
-  const handleViewProduct = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleViewProduct = (e?: React.MouseEvent) => {
+    e?.stopPropagation()
+    setIsModalOpen(true)
     onViewProduct?.(product)
   }
 
@@ -25,10 +29,11 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
 
   console.log(product)
   return (
-    <div
-      className="bg-card rounded-lg p-5 border hover:shadow-lg transition-all duration-200 cursor-pointer group min-h-[320px] flex flex-col"
-      onClick={handleViewProduct}
-    >
+    <>
+      <div
+        className="bg-card rounded-lg p-5 border hover:shadow-lg transition-all duration-200 cursor-pointer group min-h-[320px] flex flex-col"
+        onClick={() => handleViewProduct()}
+      >
       <div className="relative overflow-hidden rounded-md mb-4">
         <img
           src={product.image || "/placeholder.svg?height=160&width=240&query=product"}
@@ -90,7 +95,13 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
             </Button>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+      <ProductModal
+        product={product}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </>
   )
 }
