@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import type { Product } from "@/types/chat"
+import { geminiAgent } from "@/app/agent"
 
 interface ProcessQueryRequest {
   query: string
@@ -10,6 +11,24 @@ interface ProcessQueryResponse {
   type: "text" | "products"
   products?: Product[]
 }
+
+// System prompt for Gemini
+const SYSTEM_PROMPT = `You are a helpful shopping assistant. Analyze the user's query and respond with a JSON object containing:
+- type: Either "products" if the user is looking to buy something, or "text" for general conversation
+- content: Your response text
+- products: (only if type is "products") An array of relevant product IDs from the available products
+
+Available products (format: [id] - [name] - [category]):
+1 - Wireless Bluetooth Headphones - Electronics
+2 - Smart Fitness Watch - Wearables
+3 - Portable Phone Charger - Accessories
+4 - Ergonomic Office Chair - Furniture
+5 - 4K Webcam - Electronics
+6 - Mechanical Keyboard - Electronics
+
+Example responses:
+{"type": "products", "content": "Here are some great headphones I found!", "products": ["1"]}
+{"type": "text", "content": "Hello! How can I assist you with your shopping today?"}`
 
 // Sample products for demonstration
 const sampleProducts: Product[] = [
@@ -78,53 +97,9 @@ const sampleProducts: Product[] = [
   },
 ]
 
-// Keywords that trigger product recommendations
-const productKeywords = [
-  "product",
-  "products",
-  "buy",
-  "purchase",
-  "shop",
-  "shopping",
-  "recommend",
-  "recommendation",
-  "headphones",
-  "watch",
-  "charger",
-  "chair",
-  "webcam",
-  "keyboard",
-  "electronics",
-  "gadget",
-  "tech",
-  "technology",
-  "accessories",
-  "furniture",
-  "wearable",
-  "device",
-]
-
-// Sample text responses
-const textResponses = [
-  "I'm here to help you with any questions you have! Feel free to ask me about products, recommendations, or anything else.",
-  "That's an interesting question! I'd be happy to provide more information or help you find what you're looking for.",
-  "I understand what you're asking. Let me know if you'd like me to show you some product recommendations or if you have other questions.",
-  "Thanks for your message! I can help you with product searches, recommendations, or answer general questions.",
-  "I'm ready to assist you! Whether you're looking for products or just want to chat, I'm here to help.",
-]
-
-function containsProductKeywords(query: string): boolean {
-  const lowerQuery = query.toLowerCase()
-  return productKeywords.some((keyword) => lowerQuery.includes(keyword))
-}
-
-function getRandomProducts(count = 3): Product[] {
-  const shuffled = [...sampleProducts].sort(() => 0.5 - Math.random())
-  return shuffled.slice(0, count)
-}
-
-function getRandomTextResponse(): string {
-  return textResponses[Math.floor(Math.random() * textResponses.length)]
+// Helper function to find products by IDs
+function getProductsByIds(ids: string[]): Product[] {
+  return sampleProducts.filter(product => ids.includes(product.id))
 }
 
 export async function POST(request: NextRequest) {
@@ -136,32 +111,40 @@ export async function POST(request: NextRequest) {
     }
 
     const query = body.query.trim()
-
-    // Determine response type based on query content
-    const shouldShowProducts = containsProductKeywords(query)
+    
+    // Get response from Gemini
+    const prompt = `${SYSTEM_PROMPT}\n\nUser query: ${query}\n\nRespond with a valid JSON object only.`
+    const geminiResponse = await geminiAgent.generateResponse(prompt)
+    
+    // Parse Gemini's response
+    let parsedResponse: { type: 'text' | 'products', content: string, products?: string[] }
+    try {
+      // Extract JSON from the response (in case there's extra text)
+      const jsonMatch = geminiResponse.match(/\{[\s\S]*\}/)
+      if (!jsonMatch) throw new Error('No JSON found in response')
+      parsedResponse = JSON.parse(jsonMatch[0])
+    } catch (error) {
+      console.error('Error parsing Gemini response:', error)
+      throw new Error('Failed to parse AI response')
+    }
 
     let response: ProcessQueryResponse
 
-    if (shouldShowProducts) {
-      // Return product recommendations
-      const productCount = Math.floor(Math.random() * 4) + 3 // 3-6 products
-      const products = getRandomProducts(productCount)
-
+    if (parsedResponse.type === 'products' && parsedResponse.products?.length) {
+      // Get the actual product objects for the recommended IDs
+      const products = getProductsByIds(parsedResponse.products)
       response = {
-        content: `Here are some great product recommendations based on your request:`,
+        content: parsedResponse.content,
         type: "products",
         products: products,
       }
     } else {
       // Return text response
       response = {
-        content: getRandomTextResponse(),
+        content: parsedResponse.content,
         type: "text",
       }
     }
-
-    // Simulate API processing time
-    await new Promise((resolve) => setTimeout(resolve, 500 + Math.random() * 1000))
 
     return NextResponse.json(response)
   } catch (error) {
