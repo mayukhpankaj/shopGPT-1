@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { MessageCircle, RotateCcw, Trash2 } from "lucide-react"
+import { ShoppingBag, RotateCcw, Trash2 } from "lucide-react"
 
 interface ChatHeaderProps {
   onClearChat: () => void
@@ -10,15 +10,14 @@ interface ChatHeaderProps {
   isLoading: boolean
 }
 
+
+
 export function ChatHeader({ onClearChat, onRetry, hasMessages, isLoading }: ChatHeaderProps) {
   return (
     <header className="flex items-center justify-between p-4 border-b bg-card/50">
       <div className="flex items-center gap-2">
-        <MessageCircle className="h-8 w-8 text-accent" />
-        <h1 className="text-xl font-semibold text-foreground">deeptrue
-          
-          
-        </h1>
+        <ShoppingBag className="h-8 w-8 text-accent" />
+        <h1 className="text-xl font-semibold text-foreground">shopGPT</h1>
       </div>
 
       {hasMessages && (

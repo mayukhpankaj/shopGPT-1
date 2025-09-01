@@ -1,12 +1,22 @@
 import type { Product } from "@/types/chat"
 
 export interface ApiResponse<T = any> {
+  success: boolean
   data?: T
   error?: string
-  status: number
+  status?: number
 }
 
-export async function processQuery(query: string): Promise<
+export interface ProcessQueryParams {
+  query: string
+  threadId: string
+  messages: Array<{
+    role: 'user' | 'model' | 'system'
+    content: string
+  }>
+}
+
+export async function processQuery(params: ProcessQueryParams): Promise<
   ApiResponse<{
     content: string
     type: "text" | "products"
@@ -19,26 +29,29 @@ export async function processQuery(query: string): Promise<
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify(params),
     })
 
     const data = await response.json()
 
     if (!response.ok) {
       return {
+        success: false,
         error: data.error || "Failed to process query",
         status: response.status,
       }
     }
 
     return {
-      data,
+      success: true,
+      data: data.data || data, // Handle both formats for backward compatibility
       status: response.status,
     }
   } catch (error) {
     console.error("API call failed:", error)
     return {
-      error: "Network error occurred",
+      success: false,
+      error: error instanceof Error ? error.message : "Network error occurred",
       status: 500,
     }
   }

@@ -1,9 +1,12 @@
 export interface Message {
   id: string
-  type: "user" | "ai"
+  threadId: string
+  role: "user" | "model" | "system"
   content: string
-  aiType?: "text" | "products"
+  type?: "text" | "products"
   products?: Product[]
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Product {
@@ -15,5 +18,7 @@ export interface Product {
   description: string
   category?: string
   rating?: number
+  reviews?: number
   inStock?: boolean
+  url?: string
 }

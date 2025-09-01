@@ -1,10 +1,15 @@
 import type { Product } from "@/types/chat"
 import { ProductCard } from "./product-card"
 
+// Re-export the SerpProduct type from product-card to ensure consistency
+import type { SerpProduct } from "./product-card";
+
+type ProductType = Product | SerpProduct;
+
 interface ProductGridProps {
-  products: Product[]
-  onViewProduct?: (product: Product) => void
-  onAddToCart?: (product: Product) => void
+  products: ProductType[]
+  onViewProduct?: (product: ProductType) => void
+  onAddToCart?: (product: ProductType) => void
   className?: string
 }
 
@@ -19,8 +24,13 @@ export function ProductGrid({ products, onViewProduct, onAddToCart, className = 
 
   return (
     <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ${className}`}>
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} onViewProduct={onViewProduct} onAddToCart={onAddToCart} />
+      {products.map((product, index) => (
+        <ProductCard 
+          key={product.id ? `${product.id}-${index}` : `product-${index}`} 
+          product={product} 
+          onViewProduct={onViewProduct} 
+          onAddToCart={onAddToCart} 
+        />
       ))}
     </div>
   )

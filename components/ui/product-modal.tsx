@@ -1,18 +1,44 @@
 "use client"
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./dialog";
-import { Product } from "@/types/chat";
+import type { Product } from "@/types/chat";
+import type { SerpProduct } from "@/components/chat/product-card";
+
+type FormattedProduct = Product & {
+  name: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  description: string;
+  rating?: number;
+  reviews?: number;
+};
 import Image from "next/image";
 import { Star } from "lucide-react";
 
 interface ProductModalProps {
-  product: Product | null;
+  product: (Product | SerpProduct) | null;
   onClose: () => void;
   isOpen: boolean;
 }
 
 export function ProductModal({ product, onClose, isOpen }: ProductModalProps) {
   if (!product) return null;
+
+  // Format product data based on its source
+  const isSerpProduct = 'title' in product && 'product_link' in product;
+  const formattedProduct: FormattedProduct = isSerpProduct 
+    ? {
+        ...product as SerpProduct,
+        name: product.title,
+        price: product.extracted_price,
+        originalPrice: product.extracted_old_price,
+        image: product.thumbnail || "/placeholder.svg?height=160&width=240&query=product",
+        description: `Available from ${product.source}. ${product.delivery || ''}`,
+        category: product.source,
+        url: product.product_link,
+      }
+    : product as Product;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open: boolean) => !open && onClose()}>
@@ -23,8 +49,8 @@ export function ProductModal({ product, onClose, isOpen }: ProductModalProps) {
         <div className="flex-1 overflow-y-auto p-6 pt-4 -mx-6 px-6">
           <div className="relative aspect-square w-full max-w-[500px] mx-auto rounded-lg overflow-hidden mb-4">
             <Image
-              src={product.image || "/placeholder.svg"}
-              alt={product.name}
+              src={formattedProduct.image}
+              alt={formattedProduct.name}
               fill
               className="object-cover"
               priority
@@ -32,25 +58,25 @@ export function ProductModal({ product, onClose, isOpen }: ProductModalProps) {
             />
           </div>
           <DialogHeader className="flex-shrink-0 p-6 pb-0">
-          <DialogTitle className="text-2xl font-bold line-clamp-2 pr-8">{product.name}</DialogTitle>
-        </DialogHeader>
+            <DialogTitle className="text-2xl font-bold line-clamp-2 pr-8">{formattedProduct.name}</DialogTitle>
+          </DialogHeader>
           <div className="space-y-4 pb-6">
             <div className="flex items-center justify-between">
-              <span className="text-2xl font-bold">${product.price.toFixed(2)}</span>
-              {product.originalPrice && product.originalPrice > product.price && (
+              <span className="text-2xl font-bold">₹{formattedProduct.price?.toLocaleString('en-IN')}</span>
+              {formattedProduct.originalPrice && formattedProduct.originalPrice > (formattedProduct.price || 0) && (
                 <span className="text-sm text-muted-foreground line-through">
-                  ${product.originalPrice.toFixed(2)}
+                  ₹{formattedProduct.originalPrice?.toLocaleString('en-IN')}
                 </span>
               )}
             </div>
-            {product.rating && (
+            {formattedProduct.rating && (
               <div className="flex items-center gap-1">
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
                       className={`h-4 w-4 ${
-                        product.rating && i < Math.floor(product.rating) 
+                        formattedProduct.rating && i < Math.floor(formattedProduct.rating) 
                           ? "fill-yellow-400 text-yellow-400" 
                           : "text-gray-300"
                       }`}
@@ -58,14 +84,17 @@ export function ProductModal({ product, onClose, isOpen }: ProductModalProps) {
                   ))}
                 </div>
                 <span className="text-sm text-muted-foreground ml-1">
-                  ({product.rating?.toFixed(1)})
+                  ({formattedProduct.rating?.toFixed(1)})
+                  {formattedProduct.reviews !== undefined && formattedProduct.reviews > 0 && (
+                    <span> · {formattedProduct.reviews.toLocaleString()}</span>
+                  )}
                 </span>
               </div>
             )}
             <div className="pt-2">
               <h3 className="font-medium text-foreground mb-2">Description</h3>
               <p className="text-muted-foreground text-sm whitespace-pre-line leading-relaxed">
-                {product.description}
+                {formattedProduct.description}
               </p>
             </div>
           </div>
