@@ -1,11 +1,12 @@
 "use client"
 
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Star, Heart, ExternalLink } from "lucide-react"
 import type { Product } from "@/types/chat"
 import { ProductModal } from "@/components/ui/product-modal"
+import { ProductLoadingOverlay } from "@/components/ui/product-loading-overlay"
 
 export interface SerpProduct extends Omit<Product, 'price' | 'originalPrice' | 'image' | 'description' | 'name'> {
   position?: number;
@@ -37,6 +38,10 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false)
+  const [isShowingLoadingOverlay, setIsShowingLoadingOverlay] = useState(false)
+  const [detailedProduct, setDetailedProduct] = useState<any>(null)
+  const productDetailsCache = useRef<{ [key: string]: any }>({})
 
   // Check if the product is from SerpAPI
   const isSerpProduct = 'title' in product && 'product_link' in product;
@@ -76,10 +81,60 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
     };
   }, [product, isSerpProduct]);
 
-  const handleViewProduct = (e?: React.MouseEvent) => {
+  const handleViewProduct = async (e?: React.MouseEvent) => {
     e?.stopPropagation();
-    setIsModalOpen(true);
     onViewProduct?.(product);
+    
+    // Use product_id as cache key
+    const productId = formattedProduct.product_id || formattedProduct.id;
+    
+    // Check if we already have cached details for this product
+    if (productDetailsCache.current[productId]) {
+      console.log('Using cached product details for:', productId);
+      setDetailedProduct(productDetailsCache.current[productId]);
+      setIsModalOpen(true);
+      return;
+    }
+    
+    // For non-SERP products or products without API URL, open modal immediately
+    if (!isSerpProduct || !formattedProduct.serpapi_immersive_product_api) {
+      setIsModalOpen(true);
+      return;
+    }
+    
+    // Show loading overlay for SERP products that need API call
+    setIsShowingLoadingOverlay(true);
+    setIsLoadingDetails(true);
+    
+    try {
+      const response = await fetch('/api/productDetails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          serpapi_immersive_product_api: formattedProduct.serpapi_immersive_product_api
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Fetched product details for:', productId, data);
+        
+        // Cache the detailed product data using product_id as key
+        productDetailsCache.current[productId] = data.product_results;
+        setDetailedProduct(data.product_results);
+      } else {
+        console.error('Failed to fetch product details:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching product details:', error);
+    } finally {
+      setIsLoadingDetails(false);
+      setIsShowingLoadingOverlay(false);
+      // Open modal after loading is complete (whether successful or not)
+      setIsModalOpen(true);
+    }
   };
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -209,10 +264,17 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
         </div>
       </div>
       
+      <ProductLoadingOverlay 
+        isOpen={isShowingLoadingOverlay}
+        productName={formattedProduct.name}
+      />
+      
       <ProductModal
         product={isSerpProduct ? product : formattedProduct}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        detailedProduct={detailedProduct}
+        isLoadingDetails={isLoadingDetails}
       />
     </>
   );

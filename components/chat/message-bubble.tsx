@@ -24,13 +24,13 @@ export function MessageBubble({ message, onOptionClick }: MessageBubbleProps) {
 
   // Debug logging
   if (!isUser) {
-    console.log("AI Message:", {
-      type: message.type,
-      hasOptions: !!message.options,
-      optionsLength: message.options?.length,
-      options: message.options,
-      isOptionsMessage
-    })
+    // console.log("AI Message:", {
+    //   type: message.type,
+    //   hasOptions: !!message.options,
+    //   optionsLength: message.options?.length,
+    //   options: message.options,
+    //   isOptionsMessage
+    // })
   }
 
   const handleOptionClick = (option: string) => {
