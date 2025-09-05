@@ -4,7 +4,29 @@ import { geminiAgent } from "@/app/agent/gemini"
 
 const SERP_API_KEY = process.env.SERP_API_KEY || '4ebd18e6add84db097c27a3a85511bbf5c2cc7ddc6f493a51cdb6e4472feb260';
 
-async function SERP(query: string): Promise<any[]> {
+interface SerpShoppingResult {
+  position?: number;
+  title?: string;
+  product_link?: string;
+  product_id?: string;
+  serpapi_product_api?: string;
+  immersive_product_page_token?: string;
+  serpapi_immersive_product_api?: string;
+  source?: string;
+  source_icon?: string;
+  multiple_sources?: boolean;
+  price?: string;
+  extracted_price?: number;
+  old_price?: string;
+  extracted_old_price?: number;
+  rating?: number;
+  reviews?: number;
+  thumbnail?: string;
+  serpapi_thumbnail?: string;
+  delivery?: string;
+}
+
+async function SERP(query: string): Promise<SerpShoppingResult[]> {
   try {
     const baseUrl = 'https://serpapi.com/search.json';
     const params = new URLSearchParams({
@@ -26,7 +48,7 @@ async function SERP(query: string): Promise<any[]> {
     }
 
     const data = await response.json();
-    const results = data.shopping_results || [];
+    const results: SerpShoppingResult[] = data.shopping_results || [];
   
     // Return only the first 9 products
     return results.slice(0, 9);

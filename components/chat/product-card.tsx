@@ -8,18 +8,25 @@ import type { Product } from "@/types/chat"
 import { ProductModal } from "@/components/ui/product-modal"
 
 export interface SerpProduct extends Omit<Product, 'price' | 'originalPrice' | 'image' | 'description' | 'name'> {
-  title: string;
-  price: string;
-  extracted_price: number;
-  originalPrice?: string;
+  position?: number;
+  title?: string;
+  product_link?: string;
+  product_id?: string;
+  serpapi_product_api?: string;
+  immersive_product_page_token?: string;
+  serpapi_immersive_product_api?: string;
+  source?: string;
+  source_icon?: string;
+  multiple_sources?: boolean;
+  price?: string;
+  extracted_price?: number;
+  old_price?: string;
   extracted_old_price?: number;
-  thumbnail: string;
-  product_link: string;
-  source: string;
   rating?: number;
   reviews?: number;
+  thumbnail?: string;
+  serpapi_thumbnail?: string;
   delivery?: string;
-  // Add other SerpAPI specific fields as needed
 }
 
 interface ProductCardProps {
@@ -40,29 +47,44 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
     
     const serpProduct = product as SerpProduct;
     return {
-      id: serpProduct.product_link || String(serpProduct.extracted_price + Math.random() * 1000),
-      name: serpProduct.title,
-      price: serpProduct.extracted_price,
+      id: serpProduct.product_id || serpProduct.product_link || String((serpProduct.extracted_price || 0) + Math.random() * 1000),
+      name: serpProduct.title || 'Unknown Product',
+      price: serpProduct.extracted_price || 0,
       originalPrice: serpProduct.extracted_old_price,
       image: serpProduct.thumbnail || "/placeholder.svg?height=160&width=240&query=product",
-      description: `Available from ${serpProduct.source}. ${serpProduct.delivery || ''}`,
-      category: serpProduct.source,
+      description: `Available from ${serpProduct.source || 'Unknown Source'}. ${serpProduct.delivery || ''}`,
+      source: (serpProduct.source || 'Unknown').length > 15 ? (serpProduct.source || 'Unknown').substring(0, 15) + '..' : (serpProduct.source || 'Unknown'),
       rating: serpProduct.rating,
       inStock: true,
       url: serpProduct.product_link,
       reviews: serpProduct.reviews,
+      position: serpProduct.position,
+      title: serpProduct.title,
+      product_link: serpProduct.product_link,
+      product_id: serpProduct.product_id,
+      serpapi_product_api: serpProduct.serpapi_product_api,
+      immersive_product_page_token: serpProduct.immersive_product_page_token,
+      serpapi_immersive_product_api: serpProduct.serpapi_immersive_product_api,
+      source_icon: serpProduct.source_icon,
+      multiple_sources: serpProduct.multiple_sources,
+      extracted_price: serpProduct.extracted_price,
+      old_price: serpProduct.old_price,
+      extracted_old_price: serpProduct.extracted_old_price,
+      thumbnail: serpProduct.thumbnail,
+      serpapi_thumbnail: serpProduct.serpapi_thumbnail,
+      delivery: serpProduct.delivery,
     };
   }, [product, isSerpProduct]);
 
   const handleViewProduct = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     setIsModalOpen(true);
-    onViewProduct?.(isSerpProduct ? product : formattedProduct);
+    onViewProduct?.(product);
   };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onAddToCart?.(formattedProduct);  
+    onAddToCart?.(product);  
   };
 
   const handleExternalLink = (e: React.MouseEvent) => {
@@ -81,53 +103,78 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
           handleViewProduct();
         }}
       >
-        <div className="relative overflow-hidden rounded-md mb-4 flex-1">
+        <div className="relative overflow-hidden rounded-md mb-4 h-40">
           <img
             src={formattedProduct.image}
             alt={formattedProduct.name}
-            className="w-full h-40 object-cover transition-transform duration-200 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
             loading="lazy"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = "/placeholder.svg?height=160&width=240&query=product";
             }}
           />
-          {formattedProduct.category && (
-            <Badge className="absolute top-2 left-2 bg-accent text-accent-foreground text-xs">
-              {formattedProduct.category}
-            </Badge>
-          )}
         </div>
 
-        <div className="flex flex-col space-y-2">
-          <h3 className="font-medium text-card-foreground line-clamp-2 group-hover:text-accent transition-colors text-base leading-tight">
-            {formattedProduct.name}
-          </h3>
+        <div className="flex flex-col flex-1">
+          {/* Fixed 2 lines for product title */}
+          <div className="h-12 mb-2">
+            <h3 className="font-medium text-card-foreground line-clamp-2 group-hover:text-accent transition-colors text-base leading-6">
+              {formattedProduct.name}
+            </h3>
+          </div>
 
-          {formattedProduct.rating !== undefined && (
-            <div className="flex items-center gap-1">
-              <div className="flex items-center">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className={`h-3 w-3 ${
-                      star <= Math.floor(formattedProduct.rating || 0) 
-                        ? "fill-yellow-400 text-yellow-400" 
-                        : "text-gray-300"
-                    }`}
-                  />
-                ))}
+          {/* Fixed 1 line for rating and reviews */}
+          <div className="h-5 mb-2">
+            {formattedProduct.rating !== undefined && (
+              <div className="flex items-center gap-1">
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`h-3 w-3 ${
+                        star <= Math.floor(formattedProduct.rating || 0) 
+                          ? "fill-yellow-400 text-yellow-400" 
+                          : "text-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-xs text-gray-400">
+                  ({formattedProduct.rating?.toFixed(1)})
+                  {formattedProduct.reviews !== undefined && formattedProduct.reviews > 0 && (
+                    <span> · {formattedProduct.reviews.toLocaleString()}</span>
+                  )}
+                </span>
               </div>
-              <span className="text-xs text-gray-400">
-                ({formattedProduct.rating?.toFixed(1)})
-                {formattedProduct.reviews !== undefined && formattedProduct.reviews > 0 && (
-                  <span> · {formattedProduct.reviews.toLocaleString()}</span>
-                )}
-              </span>
-            </div>
-          )}
+            )}
+          </div>
 
-          <div className="flex items-center justify-between pt-2">
+          {/* Source badge */}
+          {formattedProduct.source && (
+            <div className="mb-2">
+              <Badge className="bg-gray-100 text-gray-foreground text-xs flex items-center gap-1">
+                {formattedProduct.source_icon && (
+                  <img 
+                    src={formattedProduct.source_icon} 
+                    alt={`${formattedProduct.source} icon`}
+                    className="w-3 h-3 object-contain"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                  />
+                )}
+                {formattedProduct.source}
+              </Badge>
+            </div>
+          )} 
+
+          {/* Spacer to push price/buttons to bottom */}
+          <div className="flex-1"></div>
+
+          {/* Fixed bottom line for price and buttons with proper spacing */}
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100/20">
             <div className="flex flex-col">
               <span className="font-semibold text-card-foreground text-lg">
                 ₹{formattedProduct.price?.toLocaleString('en-IN')}

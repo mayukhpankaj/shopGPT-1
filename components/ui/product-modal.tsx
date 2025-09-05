@@ -30,13 +30,13 @@ export function ProductModal({ product, onClose, isOpen }: ProductModalProps) {
   const formattedProduct: FormattedProduct = isSerpProduct 
     ? {
         ...product as SerpProduct,
-        name: product.title,
-        price: product.extracted_price,
-        originalPrice: product.extracted_old_price,
-        image: product.thumbnail || "/placeholder.svg?height=160&width=240&query=product",
-        description: `Available from ${product.source}. ${product.delivery || ''}`,
-        category: product.source,
-        url: product.product_link,
+        name: (product as any).title || 'Unknown Product',
+        price: (product as any).extracted_price || 0,
+        originalPrice: (product as any).extracted_old_price,
+        image: (product as any).thumbnail || "/placeholder.svg?height=160&width=240&query=product",
+        description: `Available from ${(product as any).source || 'Unknown Source'}. ${(product as any).delivery || ''}`,
+        category: (product as any).source || 'Unknown',
+        url: (product as any).product_link,
       }
     : product as Product;
 
