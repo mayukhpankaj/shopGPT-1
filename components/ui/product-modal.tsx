@@ -195,7 +195,9 @@ export function ProductModal({ product, onClose, isOpen, detailedProduct, isLoad
                               className="w-3 h-3 object-contain"
                             />
                           )}
-                          <span className="font-medium text-xs text-foreground truncate">{store.name}</span>
+                          <span className="font-medium text-xs text-foreground truncate">
+                            {store.name.length > 15 ? store.name.substring(0, 15) + '...' : store.name}
+                          </span>
                         </div>
                         <span className="font-semibold text-xs text-purple-400">{store.price}</span>
                       </div>
