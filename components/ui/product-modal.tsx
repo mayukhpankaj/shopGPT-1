@@ -1,6 +1,6 @@
 "use client"
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./dialog";
 import type { Product } from "@/types/chat";
 import type { SerpProduct } from "@/components/chat/product-card";
 
@@ -59,6 +59,9 @@ export function ProductModal({ product, onClose, isOpen }: ProductModalProps) {
           </div>
           <DialogHeader className="flex-shrink-0 p-6 pb-0">
             <DialogTitle className="text-2xl font-bold line-clamp-2 pr-8">{formattedProduct.name}</DialogTitle>
+            <DialogDescription className="sr-only">
+              Product details for {formattedProduct.name}
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pb-6">
             <div className="flex items-center justify-between">

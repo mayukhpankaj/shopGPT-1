@@ -126,7 +126,7 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
 
           {/* Fixed 1 line for rating and reviews */}
           <div className="h-5 mb-2">
-            {formattedProduct.rating !== undefined && (
+            {formattedProduct.rating !== null && (
               <div className="flex items-center gap-1">
                 <div className="flex items-center">
                   {[1, 2, 3, 4, 5].map((star) => (
