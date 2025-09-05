@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Send, MessageCircle } from "lucide-react"
@@ -14,9 +15,26 @@ interface ChatInputProps {
 }
 
 export function ChatInput({ inputValue, setInputValue, onSubmit, isLoading, isNewThread }: ChatInputProps) {
+  const [isFocused, setIsFocused] = useState(false)
+  const [isTyping, setIsTyping] = useState(false)
+
   const inputContainerClass = isNewThread
-    ? "fixed inset-0 flex items-center justify-center p-4"
-    : "sticky bottom-0 bg-background/80 backdrop-blur-sm border-t p-4 flex justify-center"
+    ? "fixed inset-0 flex items-center justify-center p-4 z-50"
+    : "sticky bottom-0 glass-message border-t p-4 flex justify-center z-50"
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value)
+    setIsTyping(e.target.value.length > 0)
+  }
+
+  const handleFocus = () => {
+    setIsFocused(true)
+  }
+
+  const handleBlur = () => {
+    setIsFocused(false)
+    setIsTyping(false)
+  }
 
   return (
     <div className={inputContainerClass}>
@@ -31,18 +49,26 @@ export function ChatInput({ inputValue, setInputValue, onSubmit, isLoading, isNe
 
         <form onSubmit={onSubmit} className="flex gap-2">
           <div className="flex gap-2 w-full max-w-xl mx-auto">
-            <Input
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="what are you shopping today ?"
-              className="flex-1 bg-input border-border focus:ring-2 focus:ring-ring placeholder:text-gray-400"
-              disabled={isLoading}
-            />
+            <div className="relative flex-1">
+              <Input
+                value={inputValue}
+                onChange={handleInputChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                placeholder="what are you shopping today ?"
+                className={`w-full glass-button placeholder:text-muted-foreground transition-all duration-300 ${
+                  isFocused && isTyping 
+                    ? 'gradient-border-animation !border-transparent !outline-none !ring-0 !shadow-none focus-visible:!border-transparent focus-visible:!ring-0 focus-visible:!shadow-none text-white' 
+                    : 'border-2 border-purple-400/30 focus:border-purple-500/50 focus:ring-2 focus:ring-purple-300/20 text-card-foreground'
+                }`}
+                disabled={isLoading}
+              />
+            </div>
             <Button
               type="submit"
               size="icon"
               disabled={!inputValue.trim() || isLoading}
-              className="bg-accent hover:bg-accent/90 text-accent-foreground"
+              className="glass-button hover:bg-purple-400/20 text-card-foreground border-2 border-purple-400/30 hover:border-purple-500/50 bg-transparent transition-all duration-200"
             >
               <Send className="h-4 w-4" />
             </Button>

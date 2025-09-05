@@ -1,11 +1,13 @@
 import { ProductGrid } from "./product-grid"
+import { OptionsGrid } from "./options-grid"
 import type { Message } from "@/types/chat"
 
 interface MessageBubbleProps {
   message: Message
+  onOptionClick?: (option: string) => void
 }
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+export function MessageBubble({ message, onOptionClick }: MessageBubbleProps) {
   const handleViewProduct = (product: any) => {
     console.log("View product:", product)
     // TODO: Implement product view functionality
@@ -18,14 +20,32 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
   const isUser = message.role === "user"
   const isProductMessage = message.type === "products" && message.products && message.products.length > 0
+  const isOptionsMessage = message.type === "options" && message.options && message.options.length > 0
+
+  // Debug logging
+  if (!isUser) {
+    console.log("AI Message:", {
+      type: message.type,
+      hasOptions: !!message.options,
+      optionsLength: message.options?.length,
+      options: message.options,
+      isOptionsMessage
+    })
+  }
+
+  const handleOptionClick = (option: string) => {
+    if (onOptionClick) {
+      onOptionClick(option)
+    }
+  }
 
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"} w-full`}>
+    <div className={`flex flex-col ${isUser ? "items-end" : "items-start"} w-full`} data-message-id={message.id}>
       <div
-        className={`max-w-[80%] rounded-lg p-4 ${
+        className={`max-w-[80%] rounded-xl p-4 ${
           isUser 
-            ? "bg-card text-card-foreground border border-border ml-auto" 
-            : "bg-card text-card-foreground border border-border mr-auto"
+            ? "glass-message text-card-foreground" 
+            : "glass-message text-card-foreground"
         }`}
       >
         <p className="text-sm leading-relaxed">{message.content}</p>
@@ -36,6 +56,12 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           </div>
         )}
       </div>
+
+      {!isUser && isOptionsMessage && message.options && (
+        <div className="mt-3 max-w-[80%]">
+          <OptionsGrid options={message.options} onOptionClick={handleOptionClick} />
+        </div>
+      )}
     </div>
   )
 }

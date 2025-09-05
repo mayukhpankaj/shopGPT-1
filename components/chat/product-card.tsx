@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Star, ShoppingCart, ExternalLink } from "lucide-react"
+import { Star, Heart, ExternalLink } from "lucide-react"
 import type { Product } from "@/types/chat"
 import { ProductModal } from "@/components/ui/product-modal"
 
@@ -75,7 +75,7 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
   return (
     <>
       <div
-        className="bg-card rounded-lg p-5 border hover:shadow-lg transition-all duration-200 cursor-pointer min-h-[320px] flex flex-col"
+        className="glass-gradient rounded-xl p-5 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 cursor-pointer min-h-[320px] flex flex-col group"
         onClick={(e) => {
           e.stopPropagation();
           handleViewProduct();
@@ -118,7 +118,7 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
                   />
                 ))}
               </div>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-gray-400">
                 ({formattedProduct.rating?.toFixed(1)})
                 {formattedProduct.reviews !== undefined && formattedProduct.reviews > 0 && (
                   <span> · {formattedProduct.reviews.toLocaleString()}</span>
@@ -144,21 +144,19 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
                 size="sm"
                 variant="outline"
                 onClick={handleAddToCart}
-                className="hover:bg-accent hover:text-accent-foreground transition-colors bg-transparent px-2"
+                className="glass-button hover:bg-pink-400/20 hover:border-pink-400/40 text-card-foreground px-2 border-0"
               >
-                <ShoppingCart className="h-3 w-3" />
+                <Heart className="h-3 w-3" />
               </Button>
-              <Button
-                size="sm"
-                className="bg-accent hover:bg-accent/90 text-accent-foreground px-3"
-                onClick={isSerpProduct ? handleExternalLink : handleViewProduct}
-              >
-                {isSerpProduct ? (
-                  <ExternalLink className="h-3 w-3" />
-                ) : (
-                  'View'
-                )}
-              </Button>
+              {!isSerpProduct && (
+                <Button
+                  size="sm"
+                  className="glass-button hover:glass-option text-card-foreground px-3 border-0"
+                  onClick={handleViewProduct}
+                >
+                  View
+                </Button>
+              )}
             </div>
           </div>
         </div>

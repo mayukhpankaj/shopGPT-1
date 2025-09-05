@@ -48,8 +48,10 @@ interface ProcessQueryRequest {
 
 interface ProcessQueryResponse {
   content: string
-  type: "text" | "products"
+  type: "text" | "products" | "options"
   products?: Product[]
+  options?: string[]
+  stage?: 'NEW' | 'ASK' | 'PRODUCTS'
   messages?: Array<{
     role: 'user' | 'model' | 'system'
     content: string
@@ -83,12 +85,12 @@ Your role is similar to a shop assistant, who asks customer questions, Understan
 
 3 steps
 
-Query-> Ask Question ->  Product Search Query Text for Google Search and Show Products
+NEW INTENT,-> ASK Question ->  Product Search Query Text for Google Search and Show Products
 
 you help the User in shopping journey by answering in short helpful answers, asking short questions to understand user's need, quick suggestions and finally finding user the right product. 
 Ask only 1 or 2 questions at max !
 
-keep track of user's conversation history to understand user's need, user's Idea of the product and Product Category , Specification. 
+keep track of user's conversation history to understand user's need, user's Idea of the product and Product Category , Specification. Give user a list of specification or category or budget.
 
 keep track Your Position / Stage in Customer shopping journey.
 
@@ -96,32 +98,33 @@ when you have finally asked questions and Understood User needs and Intent and c
 
 Enum for customer Journey in the following Order Strictly: 
 
-1. "query" - User has a query , a Intent or a question. 
-2. "ask" - You ask quick short question to better undersand Product category, Specification and construct Google Search query text.
-3. "products" -  You Create Product Search Query for Google Search and ready to show for Products.
+1. "NEW" - User has a Intent or a question. 
+2. "ASK" - You ask quick short question to better undersand Product category, Specification and generate a list , array of options of specification, category or budget ranges, choices, filters depending on the product depending on the product.
+3. "PRODUCTS" -  You Create Product Search Query for Google Search and ready to show for Products.
 
+in case user asks new question move back to NEW stage and ask new question.
 
-Analyze the user's query and respond with a JSON object containing:
-- type: Either "products" if You are ready to show Products, or "text" for general conversation, short questions
+Analyze the user's INTENT/QUERY and respond with a JSON object containing:
+- type: Either "text" for general conversation  OR || "options" for short questions with list of Product category, specification, budget, choices, filters depending on the product OR || "products" if you for ready to show products. 
 - content: Your response text for User
-- stage: Enum for customer Journey either "query" or "ask" or "products"
-- products: You are Ready to show products and formed  Product Search Query Text for Google Search
+- stage: Enum for customer Journey either "NEW" OR ||  "ASK" OR || "PRODUCTS"
+- options: If stage is ASK then ALWAYS. REQUIRED!! List of options of specification, category or budget ranges, choices, filters depending on the product.
+- products: If stage is PRODUCTS then You are Ready to show products and formed  Product Search Query Text for Google Search
 
 
 Example conversation:
 User Query: "Hi" 
 
-{"type": "text", "content": "Hello! How can I assist you with your shopping today?", "stage": "query"}
+{"type": "text", "content": "Hello! How can I assist you with your shopping today?", "stage": "NEW"}
 
 User Query: "I am looking for a Laptop" 
-{"type": "text", "content": "Whats your use case ? Gaming , Work , College ?", "stage": "ask"}
+{"type": "options", "content": "Whats your use case ? Gaming , Work , College ?", "stage": "ASK", "options": ["Gaming", "Work", "College"]}
 
 User Query: "I am looking for a Laptop for Gaming" 
-{"type": "text", "content": "Whats your Budget ?", "stage": "ask"}
+{"type": "options", "content": "Whats your Budget ?", "stage": "ASK", "options": ["50000", "100000", "150000"]}
 
 User Query: "my budget is 50000" 
-
-{"type": "products", "content": "Here are some great laptops I found!", "products": "laptop for gaming under 50000"}
+{"type": "products", "content": "Here are some great laptops I found!", "stage": "PRODUCTS", "products": "laptop for gaming under 50000"}
 
 `
 
@@ -167,7 +170,13 @@ export async function POST(request: NextRequest) {
     messages.push({ role: 'model' as const, content: geminiResponse })
     
     // Parse Gemini's response
-    let parsedResponse: { type: 'text' | 'products', content: string, products?: string[] }
+    let parsedResponse: { 
+      type: 'text' | 'products' | 'options', 
+      content: string, 
+      stage: 'NEW' | 'ASK' | 'PRODUCTS',
+      products?: string,
+      options?: string[]
+    }
     
     try {
       // First, try to parse the entire response as JSON
@@ -182,17 +191,29 @@ export async function POST(request: NextRequest) {
           // If no JSON found, treat it as a text response
           parsedResponse = {
             type: 'text',
-            content: geminiResponse
+            content: geminiResponse,
+            stage: 'NEW'
           }
         }
       }
 
-      // Validate the parsed response
-      if (!parsedResponse.type || !['text', 'products'].includes(parsedResponse.type)) {
-        parsedResponse.type = 'text'
+      // Set default stage if not provided
+      if (!parsedResponse.stage) {
+        parsedResponse.stage = parsedResponse.type === 'products' ? 'PRODUCTS' : 'NEW';
       }
+      
+      // Validate the parsed response
+      if (!parsedResponse.type || !['text', 'products', 'options'].includes(parsedResponse.type)) {
+        parsedResponse.type = 'text';
+      }
+      
       if (!parsedResponse.content) {
-        parsedResponse.content = 'I received an empty response.'
+        parsedResponse.content = 'I received an empty response.';
+      }
+      
+      // Ensure options is an array if type is 'options'
+      if (parsedResponse.type === 'options' && !Array.isArray(parsedResponse.options)) {
+        parsedResponse.options = [];
       }
     } catch (error) {
       console.error('Error processing Gemini response:', {
@@ -203,31 +224,40 @@ export async function POST(request: NextRequest) {
       // Fallback to a text response if parsing fails
       parsedResponse = {
         type: 'text',
-        content: 'I had trouble understanding that. Could you please rephrase your request?'
+        content: 'I had trouble understanding that. Could you please rephrase your request?',
+        stage: 'NEW'
       }
     }
 
-    let response: ProcessQueryResponse
+    let response: any;
 
     if (parsedResponse.type === 'products' && parsedResponse.products) {
-      // Ensure we have a string for the search query
+      // Handle products response
       const searchQuery = Array.isArray(parsedResponse.products) 
         ? parsedResponse.products[0] 
         : parsedResponse.products;
         
-      // Get the actual product objects using the search query
       const searchResults = await SERP(searchQuery);
-      // console.log('Search results:', searchResults);
       response = {
         content: parsedResponse.content,
         type: "products",
-        products: searchResults as unknown as Product[], // Type assertion to match expected type
+        products: searchResults as unknown as Product[],
+        stage: parsedResponse.stage
+      }
+    } else if (parsedResponse.type === 'options' && parsedResponse.options) {
+      // Handle options response
+      response = {
+        content: parsedResponse.content,
+        type: "options",
+        options: parsedResponse.options,
+        stage: parsedResponse.stage
       }
     } else {
-      // Return text response
+      // Default to text response
       response = {
         content: parsedResponse.content,
         type: "text",
+        stage: parsedResponse.stage || 'NEW'  
       }
     }
 

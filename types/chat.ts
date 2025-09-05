@@ -3,8 +3,9 @@ export interface Message {
   threadId: string
   role: "user" | "model" | "system"
   content: string
-  type?: "text" | "products"
+  type?: "text" | "products" | "options"
   products?: Product[]
+  options?: string[]
   createdAt: string
   updatedAt: string
 }

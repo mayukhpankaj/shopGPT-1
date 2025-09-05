@@ -19,8 +19,10 @@ export interface ProcessQueryParams {
 export async function processQuery(params: ProcessQueryParams): Promise<
   ApiResponse<{
     content: string
-    type: "text" | "products"
+    type: "text" | "products" | "options"
     products?: Product[]
+    options?: string[]
+    stage?: 'query' | 'ask' | 'products'
   }>
 > {
   try {

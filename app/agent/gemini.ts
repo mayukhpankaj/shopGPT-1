@@ -91,8 +91,8 @@ class GeminiAgent {
         properties: {
           type: {
             type: 'string',
-            enum: ['text', 'products'],
-            description: 'Either "products" if You are ready to show Products, or "text" for general conversation, short questions',
+            enum: ['text', 'products', 'options'],
+            description: 'Use "text" for general conversation and responses without choices. Use "options" when providing multiple choice buttons for user selection (specifications, categories, budget ranges, etc.) - MUST include options array. Use "products" when ready to show product search results.',
           },
           content: {
             type: 'string',
@@ -100,15 +100,22 @@ class GeminiAgent {
           },
           stage: {
             type: 'string',
-            enum: ['query', 'ask', 'products'],
-            description: 'Enum for customer Journey, in the following Order Strictly: 1. "query" - User has a query , a Intent or a question. 2. "ask" - You ask quick short question to better undersand Product category, Specification and construct Google Search query text. 3. "products" -  You Create Product Search Query for Google Search and ready to show for Products.',
+            enum: ['NEW', 'ASK', 'PRODUCTS'],
+            description: 'Enum for customer Journey, in the following Order Strictly: 1. "NEW" - User has a Intent/question/Query , a Intent or a question. 2. "ASK" - You ask quick short question to better undersand Product category, Specification and construct Google Search query text. 3. "PRODUCTS" -  You Create Product Search Query for Google Search and ready to show for Products.',
+          },
+          options: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description: "List of option for ASK stage, ALWAYS Required !! when type is 'options' and stage is 'ASK'. for example - specifications, -product categories, -budget ranges, - FILTERS - any multiple choice scenarios.",
           },
           products: {
             type: 'string',
             description: "Product Search Query Text for Google Search",
           },
         },
-        required: ['type', 'content', 'stage'],
+        required: ['type', 'content', 'stage','options','products'],
       };
 
       // Prepare system message

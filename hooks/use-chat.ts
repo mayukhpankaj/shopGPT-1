@@ -99,9 +99,32 @@ export function useChat(): UseChatReturn {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [])
 
+  const scrollToLastMessage = useCallback(() => {
+    // Get the last message
+    const lastMessage = messages[messages.length - 1]
+    
+    // If it's a product message, scroll to the message bubble (not the very bottom)
+    if (lastMessage?.type === 'products') {
+      // Use a slight delay to ensure the DOM has updated
+      setTimeout(() => {
+        const messageElements = document.querySelectorAll('[data-message-id]')
+        const lastMessageElement = messageElements[messageElements.length - 1]
+        if (lastMessageElement) {
+          lastMessageElement.scrollIntoView({ behavior: "smooth", block: "start" })
+        } else {
+          // Fallback to normal scroll
+          messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+        }
+      }, 100)
+    } else {
+      // For non-product messages, scroll to bottom as usual
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [messages])
+
   useEffect(() => {
-    scrollToBottom()
-  }, [messages, scrollToBottom])
+    scrollToLastMessage()
+  }, [messages, scrollToLastMessage])
 
   const createNewThread = useCallback((title: string = 'New Chat') => {
     const newThread: Thread = {
@@ -278,6 +301,7 @@ export function useChat(): UseChatReturn {
           content: result.data.content,
           type: result.data.type,
           products: result.data.products,
+          options: result.data.options,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         }

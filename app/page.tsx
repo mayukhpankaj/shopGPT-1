@@ -31,6 +31,11 @@ export default function ChatInterface() {
     // Error will be cleared on next successful message
   }
 
+  const handleOptionClick = (option: string) => {
+    // Send the selected option as a new user message
+    sendMessage(option)
+  }
+
   return (
     <div className="flex flex-col h-screen bg-background">
       <ChatHeader
@@ -42,11 +47,11 @@ export default function ChatInterface() {
 
       {error && <ErrorBanner error={error} onDismiss={handleDismissError} onRetry={retryLastMessage} />}
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto relative z-10">
         {messages.length > 0 && (
           <div className="max-w-4xl mx-auto p-4 space-y-6">
             {messages.map((message) => (
-              <MessageBubble key={message.id} message={message} />
+              <MessageBubble key={message.id} message={message} onOptionClick={handleOptionClick} />
             ))}
 
             {isLoading && <LoadingIndicator />}

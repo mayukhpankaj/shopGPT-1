@@ -14,15 +14,15 @@ interface ChatHeaderProps {
 
 export function ChatHeader({ onClearChat, onRetry, hasMessages, isLoading }: ChatHeaderProps) {
   return (
-    <header className="flex items-center justify-between p-4 border-b bg-card/50">
+    <header className="absolute top-0 left-0 right-0 z-0 flex items-center justify-between p-4 bg-transparent backdrop-blur-sm">
       <div className="flex items-center gap-2">
-        <ShoppingBag className="h-8 w-8 text-accent" />
-        <h1 className="text-xl font-semibold text-foreground">shopGPT</h1>
+        <ShoppingBag className="h-8 w-8 text-purple-400" />
+        <h6 className="text-xl text-purple-400">shopGPT</h6>
       </div>
 
       {hasMessages && (
         <div className="flex items-center gap-2">
-          <Button
+          {/* <Button
             variant="outline"
             size="sm"
             onClick={onRetry}
@@ -41,7 +41,7 @@ export function ChatHeader({ onClearChat, onRetry, hasMessages, isLoading }: Cha
           >
             <Trash2 className="h-4 w-4 mr-1" />
             Clear
-          </Button>
+          </Button> */}
         </div>
       )}
     </header>
