@@ -5,6 +5,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Send, MessageCircle } from "lucide-react"
+import Image from "next/image"
 
 interface ChatInputProps {
   inputValue: string
@@ -41,7 +42,13 @@ export function ChatInput({ inputValue, setInputValue, onSubmit, isLoading, isNe
       <div className="w-full max-w-2xl">
         {isNewThread && (
           <div className="text-center mb-6">
-            <MessageCircle className="h-16 w-16 text-accent mx-auto mb-4" />
+            <Image 
+              src="/shopGPT.png" 
+              alt="shopGPT Logo" 
+              width={64} 
+              height={64}
+              className="mx-auto mb-4 object-contain"
+            />
             <h2 className="text-2xl font-semibold text-foreground mb-2">How can I help you today?</h2>
             <p className="text-muted-foreground">Ask me anything or request product recommendations</p>
           </div>
