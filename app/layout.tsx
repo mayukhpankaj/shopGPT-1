@@ -1,18 +1,20 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Ubuntu_Sans } from "next/font/google"
 import "./globals.css"
 
-const geist = Geist({
+const ubuntuSans = Ubuntu_Sans({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-geist",
+  variable: "--font-ubuntu-sans",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
 })
 
-const geistMono = Geist_Mono({
+const ubuntuSansMono = Ubuntu_Sans({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-geist-mono",
+  variable: "--font-ubuntu-sans-mono",
+  weight: ["400", "500", "600", "700"],
 })
 
 export const metadata: Metadata = {
@@ -27,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geist.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" className={`${ubuntuSans.variable} ${ubuntuSansMono.variable} antialiased`}>
       <body className="bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 min-h-screen">
         {children}
       </body>

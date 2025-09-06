@@ -44,7 +44,7 @@ export function MessageBubble({ message, onOptionClick }: MessageBubbleProps) {
       <div
         className={`max-w-[80%] rounded-xl p-4 ${
           isUser 
-            ? "glass-message text-card-foreground" 
+            ? "glass-message text-card-foreground shadow-lg shadow-sky-500/30" 
             : "glass-message text-card-foreground"
         }`}
       >
