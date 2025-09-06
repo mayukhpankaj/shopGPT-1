@@ -169,6 +169,23 @@ export async function POST(request: NextRequest) {
     // Add the new user message
     messages.push({ role: 'user' as const, content: query })
     
+    // Trim conversation history if it gets too long
+    // Keep system message + last 16 messages (8 user-AI pairs)
+    if (messages.length > 18) {
+      const systemMessage = messages.find(m => m.role === 'system')
+      const nonSystemMessages = messages.filter(m => m.role !== 'system')
+      
+      // Remove the oldest 2 messages (first user + first AI response)
+      const trimmedMessages = nonSystemMessages.slice(2)
+      
+      // Reconstruct with system message first
+      messages.length = 0
+      if (systemMessage) {
+        messages.push(systemMessage)
+      }
+      messages.push(...trimmedMessages)
+    }
+    
     // Filter out system messages as Gemini only accepts 'user' and 'model' roles
     const geminiMessages = messages
       .filter(msg => msg.role !== 'system')

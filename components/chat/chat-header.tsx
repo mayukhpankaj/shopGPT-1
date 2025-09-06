@@ -1,7 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ShoppingBag, RotateCcw, Trash2 } from "lucide-react"
+import { RotateCcw, Trash2 } from "lucide-react"
+import Image from "next/image"
 
 interface ChatHeaderProps {
   onClearChat: () => void
@@ -16,8 +17,14 @@ export function ChatHeader({ onClearChat, onRetry, hasMessages, isLoading }: Cha
   return (
     <header className="absolute top-0 left-0 right-0 z-0 flex items-center justify-between p-4 bg-transparent backdrop-blur-sm">
       <div className="flex items-center gap-2">
-        <ShoppingBag className="h-8 w-8 text-purple-400" />
-        <h6 className="text-xl text-purple-400">shopGPT</h6>
+        <Image 
+          src="/shopGPT.png" 
+          alt="shopGPT Logo" 
+          width={32} 
+          height={32}
+          className="object-contain"
+        />
+        <h6 className="text-xl text-gray-700">ShopGPT</h6>
       </div>
 
       {hasMessages && (

@@ -158,11 +158,11 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
           handleViewProduct();
         }}
       >
-        <div className="relative overflow-hidden rounded-md mb-4 h-40">
+        <div className="relative overflow-hidden rounded-md mb-4 h-40 bg-gray-50 flex items-center justify-center">
           <img
             src={formattedProduct.image}
             alt={formattedProduct.name}
-            className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+            className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-105"
             loading="lazy"
             onError={(e) => {
               const target = e.target as HTMLImageElement;

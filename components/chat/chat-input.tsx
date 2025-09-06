@@ -56,11 +56,7 @@ export function ChatInput({ inputValue, setInputValue, onSubmit, isLoading, isNe
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 placeholder="what are you shopping today ?"
-                className={`w-full glass-button placeholder:text-muted-foreground transition-all duration-300 ${
-                  isFocused && isTyping 
-                    ? 'gradient-border-animation !border-transparent !outline-none !ring-0 !shadow-none focus-visible:!border-transparent focus-visible:!ring-0 focus-visible:!shadow-none text-white' 
-                    : 'border-2 border-purple-400/30 focus:border-purple-500/50 focus:ring-2 focus:ring-purple-300/20 text-card-foreground'
-                }`}
+                className="w-full glass-button placeholder:text-muted-foreground border-2 border-purple-400/30 focus:border-purple-500/50 focus:ring-2 focus:ring-purple-300/20 text-card-foreground"
                 disabled={isLoading}
               />
             </div>
