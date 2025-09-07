@@ -77,6 +77,32 @@ export function ChatInput({ inputValue, setInputValue, onSubmit, isLoading, isNe
             </Button>
           </div>
         </form>
+
+        {/* Floating action bubbles - only show on new thread (home page) */}
+        {isNewThread && (
+          <div className="flex flex-wrap justify-center gap-3 mt-6 max-w-md mx-auto">
+            {['Laptop', 'Smartphone', 'Headphones', 'Furniture'].map((suggestion) => (
+              <button
+                key={suggestion}
+                type="button"
+                onClick={() => {
+                  setInputValue(suggestion);
+                  // Trigger form submission after setting the value
+                  setTimeout(() => {
+                    const form = document.querySelector('form');
+                    if (form) {
+                      const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                      form.dispatchEvent(submitEvent);
+                    }
+                  }, 0);
+                }}
+                className="glass-option px-4 py-2 rounded-full text-sm font-medium text-card-foreground hover:bg-purple-400/20 hover:border-purple-400/40 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl border border-gray-200/20 dark:border-gray-700/20"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
