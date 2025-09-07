@@ -5,23 +5,35 @@ import { Button } from "@/components/ui/button"
 import { RotateCcw, Trash2, MessageSquarePlus } from "lucide-react"
 import Image from "next/image"
 import { Drawer } from "@/components/ui/drawer"
+import { ThreadList } from "./thread-list"
+import type { Thread } from "@/types/chat"
 
 interface ChatHeaderProps {
   onClearChat: () => void
   onRetry: () => void
   hasMessages: boolean
   isLoading: boolean
+  threads: Thread[]
+  currentThreadId: string
+  onThreadSelect: (threadId: string) => void
+  onThreadDelete: (threadId: string) => void
+  onNewThread: () => void
 }
 
 
 
-export function ChatHeader({ onClearChat, onRetry, hasMessages, isLoading }: ChatHeaderProps) {
+export function ChatHeader({ 
+  onClearChat, 
+  onRetry, 
+  hasMessages, 
+  isLoading, 
+  threads, 
+  currentThreadId, 
+  onThreadSelect, 
+  onThreadDelete, 
+  onNewThread 
+}: ChatHeaderProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-
-  const handleNewChat = () => {
-    onClearChat()
-    setIsDrawerOpen(false)
-  }
 
   return (
     <>
@@ -67,16 +79,14 @@ export function ChatHeader({ onClearChat, onRetry, hasMessages, isLoading }: Cha
       </header>
 
       <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
-        <div className="space-y-4">
-          <Button
-            variant="outline"
-            className="w-full justify-start"
-            onClick={handleNewChat}
-          >
-            <MessageSquarePlus className="h-4 w-4 mr-2" />
-            New Chat
-          </Button>
-        </div>
+        <ThreadList
+          threads={threads}
+          currentThreadId={currentThreadId}
+          onThreadSelect={onThreadSelect}
+          onThreadDelete={onThreadDelete}
+          onNewThread={onNewThread}
+          onDrawerClose={() => setIsDrawerOpen(false)}
+        />
       </Drawer>
     </>
   )

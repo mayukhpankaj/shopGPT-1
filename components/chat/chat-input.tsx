@@ -49,8 +49,8 @@ export function ChatInput({ inputValue, setInputValue, onSubmit, isLoading, isNe
               height={64}
               className="mx-auto mb-4 object-contain"
             />
-            <h2 className="text-2xl font-semibold text-foreground mb-2">How can I help you today?</h2>
-            <p className="text-muted-foreground">Ask me anything or request product recommendations</p>
+            <h2 className="text-2xl font-semibold text-foreground mb-2">What are you shopping today ?</h2>
+            {/* <p className="text-muted-foreground">Ask me anything or request product recommendations</p> */}
           </div>
         )}
 

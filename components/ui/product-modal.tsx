@@ -27,6 +27,29 @@ interface ProductModalProps {
 }
 
 export function ProductModal({ product, onClose, isOpen, detailedProduct, isLoadingDetails }: ProductModalProps) {
+  // Handle back button/gesture on mobile/tablet
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePopState = () => {
+      onClose();
+    };
+
+    // Add history entry when modal opens
+    window.history.pushState({ modalOpen: true }, '');
+    
+    // Listen for popstate (back button/gesture)
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      
+      // Clean up our history entry when modal closes
+      if (window.history.state?.modalOpen) {
+        window.history.back();
+      }
+    };
+  }, [isOpen, onClose]);
   if (!product) return null;
 
   // Format product data based on its source
@@ -115,7 +138,7 @@ export function ProductModal({ product, onClose, isOpen, detailedProduct, isLoad
 
   return (
     <Dialog open={isOpen} onOpenChange={(open: boolean) => !open && onClose()}>
-      <DialogContent className="flex flex-col h-[90vh] max-h-[90vh] w-[70vw] p-0">
+      <DialogContent className="flex flex-col h-[90vh] max-h-[90vh] w-[95vw] sm:w-[85vw] md:w-[70vw] p-0">
         <DialogHeader className="flex-shrink-0 p-6 pb-4 border-b border-gray-100/20">
           <DialogTitle className="text-2xl font-bold line-clamp-2 pr-8 text-gray-700">
             {displayTitle}
@@ -124,7 +147,7 @@ export function ProductModal({ product, onClose, isOpen, detailedProduct, isLoad
           <DialogDescription className="sr-only">Product details modal</DialogDescription>
         </DialogHeader>
         
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400" style={{maxHeight: 'calc(90vh - 120px)'}}>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400" style={{maxHeight: 'calc(90vh - 120px)'}}>
           {/* Loading state for detailed product info */}
           {isLoadingDetails && (
             <div className="flex items-center justify-center py-12">
@@ -373,9 +396,9 @@ export function ProductModal({ product, onClose, isOpen, detailedProduct, isLoad
 
           {/* You May Like Section */}
           {displayMoreOptions.length > 0 && (
-            <div className="w-full">
+            <div className="w-full -mx-2 sm:mx-0 px-2 sm:px-0">
               <h3 className="font-semibold text-foreground mb-4 text-lg">You may like</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4">
                 {displayMoreOptions.slice(0, 8).map((suggestion: any, index: number) => (
                   <div 
                     key={index} 
@@ -403,7 +426,7 @@ export function ProductModal({ product, onClose, isOpen, detailedProduct, isLoad
 
                     {/* Rating Stars */}
                     {suggestion.rating && (
-                      <div className="flex items-center gap-1 mb-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 mb-2">
                         <div className="flex items-center">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <Star
@@ -416,14 +439,16 @@ export function ProductModal({ product, onClose, isOpen, detailedProduct, isLoad
                             />
                           ))}
                         </div>
-                        <span className="text-xs text-gray-500">
-                          ({suggestion.rating?.toFixed(1)})
-                        </span>
-                        {suggestion.reviews && suggestion.reviews > 0 && (
-                          <span className="text-xs text-gray-400">
-                            · {suggestion.reviews.toLocaleString()}
+                        <div className="flex flex-wrap items-center gap-x-1">
+                          <span className="text-xs text-gray-500">
+                            ({suggestion.rating?.toFixed(1)})
                           </span>
-                        )}
+                          {suggestion.reviews && suggestion.reviews > 0 && (
+                            <span className="text-xs text-gray-400">
+                              {suggestion.reviews.toLocaleString()} reviews
+                            </span>
+                          )}
+                        </div>
                       </div>
                     )}
 

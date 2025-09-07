@@ -10,6 +10,13 @@ export interface Message {
   updatedAt: string
 }
 
+export interface Thread {
+  id: string
+  title: string
+  createdAt: string
+  updatedAt: string
+}
+
 export interface Product {
   id: string
   name: string

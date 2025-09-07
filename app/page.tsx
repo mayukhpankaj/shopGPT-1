@@ -20,6 +20,11 @@ export default function ChatInterface() {
     clearChat,
     retryLastMessage,
     isNewThread,
+    threads,
+    currentThreadId,
+    createNewThread,
+    switchThread,
+    deleteThread,
   } = useChat()
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -43,6 +48,11 @@ export default function ChatInterface() {
         onRetry={retryLastMessage}
         hasMessages={messages.length > 0}
         isLoading={isLoading}
+        threads={threads}
+        currentThreadId={currentThreadId}
+        onThreadSelect={switchThread}
+        onThreadDelete={deleteThread}
+        onNewThread={createNewThread}
       />
 
       {error && <ErrorBanner error={error} onDismiss={handleDismissError} onRetry={retryLastMessage} />}

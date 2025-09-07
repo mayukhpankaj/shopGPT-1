@@ -1,6 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
 
-const SERP_API_KEY = process.env.SERP_API_KEY || '4ebd18e6add84db097c27a3a85511bbf5c2cc7ddc6f493a51cdb6e4472feb260';
+const SERP_API_KEY = process.env.SERP_API_KEY;
+
+if (!SERP_API_KEY) {
+  throw new Error('SERP_API_KEY environment variable is required');
+}
 
 interface ProductDetailsRequest {
   serpapi_immersive_product_api: string

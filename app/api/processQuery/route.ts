@@ -2,7 +2,11 @@ import { type NextRequest, NextResponse } from "next/server"
 import type { Product } from "@/types/chat"
 import { geminiAgent } from "@/app/agent/gemini"
 
-const SERP_API_KEY = process.env.SERP_API_KEY || '4ebd18e6add84db097c27a3a85511bbf5c2cc7ddc6f493a51cdb6e4472feb260';
+const SERP_API_KEY = process.env.SERP_API_KEY;
+
+if (!SERP_API_KEY) {
+  throw new Error('SERP_API_KEY environment variable is required');
+}
 
 interface SerpShoppingResult {
   position?: number;
@@ -37,7 +41,7 @@ async function SERP(query: string): Promise<SerpShoppingResult[]> {
       gl: 'in',
       hl: 'en',
       num: '9',
-      api_key: SERP_API_KEY
+      api_key: SERP_API_KEY!
     });
 
     console.log('Fetching products with query:', query);
