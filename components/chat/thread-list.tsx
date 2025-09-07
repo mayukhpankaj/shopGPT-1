@@ -89,9 +89,9 @@ export function ThreadList({
                     <p className="text-sm font-medium truncate">
                       {thread.title}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    {/* <p className="text-xs text-muted-foreground">
                       {formatDate(thread.updatedAt)}
-                    </p>
+                    </p> */}
                   </div>
                 </div>
                 
