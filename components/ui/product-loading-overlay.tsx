@@ -12,18 +12,8 @@ export function ProductLoadingOverlay({ isOpen, productName }: ProductLoadingOve
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/50 backdrop-blur-[1px]">
-      <div className="bg-white/95 backdrop-blur-sm p-8 rounded-xl shadow-2xl border border-white/20 max-w-sm mx-4">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
-          <div className="text-center">
-            <h3 className="font-semibold text-foreground mb-1">Loading Product Details</h3>
-            {productName && (
-              <p className="text-sm text-muted-foreground line-clamp-2">{productName}</p>
-            )}
-          </div>
-        </div>
-      </div>
+    <div className="absolute inset-0 bg-white/30 dark:bg-black/30 backdrop-blur-md rounded-xl flex items-center justify-center z-20">
+      <Loader2 className="h-12 w-12 animate-spin text-gray-500" />
     </div>
   );
 }
