@@ -63,7 +63,7 @@ export function ChatInput({ inputValue, setInputValue, onSubmit, isLoading, isNe
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 placeholder="what are you shopping today ?"
-                className="w-full glass-button placeholder:text-muted-foreground border-2 border-purple-400/30 focus:border-purple-500/50 focus:ring-2 focus:ring-purple-300/20 text-card-foreground"
+                className="w-full glass-button placeholder:text-muted-foreground border-2 border-purple-400/30 focus:border-gray-300 focus:ring-2 focus:ring-gray-200/50 text-card-foreground focus-visible:ring-gray-300/50 outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-offset-0 focus-visible:border-gray-300"
                 disabled={isLoading}
               />
             </div>

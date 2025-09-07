@@ -120,4 +120,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Override input focus styles to use gray instead of blue */
+  input:focus,
+  input:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgb(229 231 235 / 0.5) !important; /* gray-200/50 */
+    border-color: rgb(209 213 219) !important; /* gray-300 */
+  }
 }
