@@ -49,7 +49,7 @@ export function ChatInput({ inputValue, setInputValue, onSubmit, isLoading, isNe
               height={64}
               className="mx-auto mb-4 object-contain"
             />
-            <h2 className="text-2xl font-semibold text-foreground mb-2">What are you shopping today ?</h2>
+            <h2 className="text-2xl font-semibold text-gray-400 mb-2">Let shoppin Begin !</h2>
             {/* <p className="text-muted-foreground">Ask me anything or request product recommendations</p> */}
           </div>
         )}
@@ -62,8 +62,8 @@ export function ChatInput({ inputValue, setInputValue, onSubmit, isLoading, isNe
                 onChange={handleInputChange}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
-                placeholder="what are you shopping today ?"
-                className="w-full glass-button placeholder:text-muted-foreground border-2 border-purple-400/30 focus:border-gray-300 focus:ring-2 focus:ring-gray-200/50 text-card-foreground focus-visible:ring-gray-300/50 outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-offset-0 focus-visible:border-gray-300"
+                placeholder=""
+                className="w-full glass-button placeholder:text-muted-foreground border-2 border-gray-400/30 focus:border-gray-300 focus:ring-2 focus:ring-gray-200/50 text-card-foreground focus-visible:ring-gray-300/50 outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-offset-0 focus-visible:border-gray-300"
                 disabled={isLoading}
               />
             </div>
@@ -96,7 +96,7 @@ export function ChatInput({ inputValue, setInputValue, onSubmit, isLoading, isNe
                     }
                   }, 0);
                 }}
-                className="glass-option px-4 py-2 rounded-full text-sm font-medium text-card-foreground hover:bg-purple-400/20 hover:border-purple-400/40 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl border border-gray-200/20 dark:border-gray-700/20"
+                className="glass-option px-4 py-2 rounded-full text-sm font-light text-card-foreground hover:font-medium hover:text-blue-400 hover:bg-blue-300/20 hover:border-blue-400/40 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl border border-gray-200/20 dark:border-gray-700/20"
               >
                 {suggestion}
               </button>

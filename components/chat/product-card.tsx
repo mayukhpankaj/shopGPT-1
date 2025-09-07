@@ -93,15 +93,20 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
     if (productDetailsCache.current[productId]) {
       console.log('Using cached product details for:', productId);
       setDetailedProduct(productDetailsCache.current[productId]);
+      setIsLoadingDetails(false);
+      setIsShowingLoadingOverlay(false);
       setIsModalOpen(true);
       return;
     }
     
     // For non-SERP products or products without API URL, open modal immediately
-    // if (!isSerpProduct || !formattedProduct.serpapi_immersive_product_api) {
-    //   setIsModalOpen(true);
-    //   return;
-    // }
+    if (!isSerpProduct || !formattedProduct.serpapi_immersive_product_api) {
+      setDetailedProduct(null);
+      setIsLoadingDetails(false);
+      setIsShowingLoadingOverlay(false);
+      setIsModalOpen(true);
+      return;
+    }
     
     // Show loading overlay for SERP products that need API call
     setIsShowingLoadingOverlay(true);
@@ -127,9 +132,11 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
         setDetailedProduct(data.product_results);
       } else {
         console.error('Failed to fetch product details:', response.statusText);
+        setDetailedProduct(null);
       }
     } catch (error) {
       console.error('Error fetching product details:', error);
+      setDetailedProduct(null);
     } finally {
       setIsLoadingDetails(false);
       setIsShowingLoadingOverlay(false);
@@ -285,7 +292,7 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
           <Button 
             variant="outline" 
             size="sm" 
-            className="rounded-full text-xs h-8 px-3 flex items-center gap-1 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="rounded-full text-gray-600 text-xs h-8 px-3 flex items-center gap-1 bg-white dark:bg-gray-800 hover:bg-blue-300 dark:hover:bg-gray-700 transition-colors"
             onClick={(e) => {
               e.stopPropagation();
               // Handle ask action
@@ -298,7 +305,7 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
           <Button 
             variant="outline" 
             size="sm" 
-            className="rounded-full text-xs h-8 px-3 flex items-center gap-1 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="rounded-full text-gray-600 text-xs h-8 px-3 flex items-center gap-1 bg-white dark:bg-gray-800 hover:bg-blue-300 dark:hover:bg-gray-700 transition-colors"
             onClick={(e) => {
               e.stopPropagation();
               // Handle research action

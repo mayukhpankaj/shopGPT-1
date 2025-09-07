@@ -31,25 +31,33 @@ export function ProductModal({ product, onClose, isOpen, detailedProduct, isLoad
   useEffect(() => {
     if (!isOpen) return;
 
-    const handlePopState = () => {
-      onClose();
+    const handlePopState = (event: PopStateEvent) => {
+      // Only close if this popstate event is related to our modal
+      if (event.state?.modalOpen === false || (!event.state && window.history.length > 1)) {
+        onClose();
+      }
     };
 
-    // Add history entry when modal opens
-    window.history.pushState({ modalOpen: true }, '');
+    // Add history entry when modal opens, but only if we haven't already
+    if (!window.history.state?.modalOpen) {
+      window.history.pushState({ modalOpen: true }, '');
+    }
     
     // Listen for popstate (back button/gesture)
     window.addEventListener('popstate', handlePopState);
     
     return () => {
       window.removeEventListener('popstate', handlePopState);
-      
-      // Clean up our history entry when modal closes
-      if (window.history.state?.modalOpen) {
-        window.history.back();
-      }
     };
   }, [isOpen, onClose]);
+
+  // Separate effect to handle cleanup when modal closes
+  useEffect(() => {
+    if (!isOpen && window.history.state?.modalOpen) {
+      // Replace the current state instead of going back to avoid navigation issues
+      window.history.replaceState({ modalOpen: false }, '');
+    }
+  }, [isOpen]);
   if (!product) return null;
 
   // Format product data based on its source
