@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Star, Heart, ExternalLink } from "lucide-react"
+import { Star, Heart, ExternalLink, MessageCircle, Search } from "lucide-react"
 import type { Product } from "@/types/chat"
 import { ProductModal } from "@/components/ui/product-modal"
 import { ProductLoadingOverlay } from "@/components/ui/product-loading-overlay"
@@ -41,6 +41,7 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
   const [isLoadingDetails, setIsLoadingDetails] = useState(false)
   const [isShowingLoadingOverlay, setIsShowingLoadingOverlay] = useState(false)
   const [detailedProduct, setDetailedProduct] = useState<any>(null)
+  const [isHovered, setIsHovered] = useState(false)
   const productDetailsCache = useRef<{ [key: string]: any }>({})
 
   // Check if the product is from SerpAPI
@@ -97,10 +98,10 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
     }
     
     // For non-SERP products or products without API URL, open modal immediately
-    if (!isSerpProduct || !formattedProduct.serpapi_immersive_product_api) {
-      setIsModalOpen(true);
-      return;
-    }
+    // if (!isSerpProduct || !formattedProduct.serpapi_immersive_product_api) {
+    //   setIsModalOpen(true);
+    //   return;
+    // }
     
     // Show loading overlay for SERP products that need API call
     setIsShowingLoadingOverlay(true);
@@ -150,9 +151,11 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
   };
 
   return (
-    <>
+    <div className="relative">
       <div
         className="glass-gradient rounded-xl p-5 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 cursor-pointer min-h-[320px] flex flex-col group"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         onClick={(e) => {
           e.stopPropagation();
           handleViewProduct();
@@ -269,6 +272,45 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
         productName={formattedProduct.name}
       />
       
+      {/* Floating action bubble */}
+      <div 
+        className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full shadow-lg p-1 transition-all duration-300 ${
+          isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+        }`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center space-x-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="rounded-full text-xs h-8 px-3 flex items-center gap-1 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              // Handle ask action
+              console.log('Ask about:', formattedProduct.name);
+            }}
+          >
+            <MessageCircle className="h-3.5 w-3.5 mr-1" />
+            Ask
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="rounded-full text-xs h-8 px-3 flex items-center gap-1 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              // Handle research action
+              console.log('Research:', formattedProduct.name);
+            }}
+          >
+            <Search className="h-3.5 w-3.5 mr-1" />
+            Research
+          </Button>
+        </div>
+      </div>
+
       <ProductModal
         product={isSerpProduct ? product : formattedProduct}
         isOpen={isModalOpen}
@@ -276,6 +318,6 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
         detailedProduct={detailedProduct}
         isLoadingDetails={isLoadingDetails}
       />
-    </>
+    </div>
   );
 }
