@@ -55,7 +55,7 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
     return {
       id: serpProduct.product_id || serpProduct.product_link || String((serpProduct.extracted_price || 0) + Math.random() * 1000),
       name: serpProduct.title || 'Unknown Product',
-      price: serpProduct.extracted_price || 0,
+      price: serpProduct.extracted_price,
       originalPrice: serpProduct.extracted_old_price,
       image: serpProduct.thumbnail || "/placeholder.svg?height=160&width=240&query=product",
       description: `Available from ${serpProduct.source || 'Unknown Source'}. ${serpProduct.delivery || ''}`,
@@ -242,11 +242,11 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
           <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100/20">
             <div className="flex flex-col">
               <span className="font-semibold text-card-foreground text-lg">
-                ₹{formattedProduct.price?.toLocaleString('en-IN')}
+                ${formattedProduct.price}
               </span>
               {formattedProduct.originalPrice && formattedProduct.originalPrice > (formattedProduct.price || 0) && (
-                <span className="text-xs text-muted-foreground line-through">
-                  ₹{formattedProduct.originalPrice?.toLocaleString('en-IN')}
+                <span className="text-xs text-gray-400 line-through">
+                  ${formattedProduct.originalPrice}
                 </span>
               )}
             </div>

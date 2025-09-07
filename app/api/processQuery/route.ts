@@ -34,11 +34,11 @@ async function SERP(query: string): Promise<SerpShoppingResult[]> {
   try {
     const baseUrl = 'https://serpapi.com/search.json';
     const params = new URLSearchParams({
-      engine: 'google_shopping',
+      engine: 'google_shopping_light',
       q: query,
-      location: 'India',
-      google_domain: 'google.co.in',
-      gl: 'in',
+      location: 'United States',
+      google_domain: 'google.com',
+      gl: 'us',
       hl: 'en',
       num: '9',
       api_key: SERP_API_KEY!
