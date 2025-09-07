@@ -32,16 +32,16 @@ export function ProductModal({ product, onClose, isOpen, detailedProduct, isLoad
     if (!isOpen) return;
 
     const handlePopState = (event: PopStateEvent) => {
-      // Only close if this popstate event is related to our modal
-      if (event.state?.modalOpen === false || (!event.state && window.history.length > 1)) {
+      // Check if this popstate is for our modal
+      if (event.state?.modalOpen === false || !event.state?.modalOpen) {
         onClose();
+        return;
       }
     };
 
-    // Add history entry when modal opens, but only if we haven't already
-    if (!window.history.state?.modalOpen) {
-      window.history.pushState({ modalOpen: true }, '');
-    }
+    // Add a history entry when modal opens
+    const currentState = window.history.state;
+    window.history.pushState({ ...currentState, modalOpen: true }, '');
     
     // Listen for popstate (back button/gesture)
     window.addEventListener('popstate', handlePopState);
@@ -51,11 +51,14 @@ export function ProductModal({ product, onClose, isOpen, detailedProduct, isLoad
     };
   }, [isOpen, onClose]);
 
-  // Separate effect to handle cleanup when modal closes
+  // Handle modal closing - restore previous history state
   useEffect(() => {
-    if (!isOpen && window.history.state?.modalOpen) {
-      // Replace the current state instead of going back to avoid navigation issues
-      window.history.replaceState({ modalOpen: false }, '');
+    if (!isOpen) {
+      // When modal closes, check if we need to clean up history
+      if (window.history.state?.modalOpen) {
+        // Go back to remove our modal history entry
+        window.history.back();
+      }
     }
   }, [isOpen]);
   if (!product) return null;
