@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Star, Heart, ExternalLink, MessageCircle, Search } from "lucide-react"
+import { Star, Heart, ExternalLink, MessageCircle, CornerDownRight , Sparkles } from "lucide-react"
 import type { Product } from "@/types/chat"
 import { ProductModal } from "@/components/ui/product-modal"
 import { ProductLoadingOverlay } from "@/components/ui/product-loading-overlay"
@@ -55,7 +55,7 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
     return {
       id: serpProduct.product_id || serpProduct.product_link || String((serpProduct.extracted_price || 0) + Math.random() * 1000),
       name: serpProduct.title || 'Unknown Product',
-      price: serpProduct.extracted_price,
+      price: serpProduct.extracted_price || 0,
       originalPrice: serpProduct.extracted_old_price,
       image: serpProduct.thumbnail || "/placeholder.svg?height=160&width=240&query=product",
       description: `Available from ${serpProduct.source || 'Unknown Source'}. ${serpProduct.delivery || ''}`,
@@ -299,7 +299,7 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
               console.log('Ask about:', formattedProduct.name);
             }}
           >
-            <MessageCircle className="h-3.5 w-3.5 mr-1" />
+            <CornerDownRight className="h-3.5 w-3.5 mr-1" />
             Ask
           </Button>
           <Button 
@@ -312,7 +312,7 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
               console.log('Research:', formattedProduct.name);
             }}
           >
-            <Search className="h-3.5 w-3.5 mr-1" />
+            <Sparkles className="h-3.5 w-3.5 mr-1" />
             Research
           </Button>
         </div>
