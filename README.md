@@ -1,53 +1,149 @@
-# Conversational Chat App with Product Recommendations
+# ShopGPT - AI-Powered Shopping Assistant
 
-A modern, responsive chat application built with Next.js that provides both conversational AI responses and intelligent product recommendations. Features a ChatGPT-like interface with dynamic input positioning and beautiful product card displays.
+![ShopGPT Banner](public/shopGPT.png)
+
+ShopGPT is an intelligent shopping assistant that combines the power of conversational AI with product discovery. Built with Next.js and powered by Gemini AI, it provides a seamless shopping experience through natural language interactions.
 
 ## ✨ Features
 
-### Core Functionality
-- **Conversational Interface**: ChatGPT-style chat experience with smooth animations
-- **Dynamic Input Positioning**: Input centers on screen for new threads, moves to bottom for active conversations
-- **Dual Response Types**: Handles both text responses and product recommendation grids
-- **Real-time Typing Indicators**: Visual feedback during AI processing
-- **Message Persistence**: Conversations persist in browser session storage
-- **Error Handling**: Comprehensive error states with retry functionality
+### 🤖 AI-Powered Shopping Assistant
+- Natural language product search and recommendations
+- Context-aware conversations with shopping intent recognition
+- Markdown-formatted responses with rich product information
+- Multi-turn conversations for refined product searches
 
-### Product Recommendations
-- **Intelligent Product Display**: Responsive grid layout for product cards
-- **Rich Product Information**: Images, ratings, pricing, categories, and descriptions
-- **Interactive Cards**: Hover effects, view details, and add-to-cart actions
-- **Smart Query Processing**: Automatically detects product-related queries
+### 🛍️ Product Discovery
+- Intelligent product research using web search capabilities
+- Detailed product analysis with features, pricing, and ratings
+- Side-by-side product comparisons
+- Personalized recommendations based on user preferences
 
-### UI/UX
-- **Responsive Design**: Mobile-first approach with desktop enhancements
-- **Modern Aesthetics**: Clean design with purple accent colors and smooth transitions
-- **Accessibility**: WCAG compliant with proper ARIA labels and keyboard navigation
-- **Loading States**: Skeleton loaders and progress indicators
+### 🎨 Modern UI/UX
+- Clean, responsive interface that works on all devices
+- Real-time typing indicators and message streaming
+- Interactive product cards with images and key details
+- Dark/light theme support
+- Smooth animations and transitions
+
+### 🔧 Technical Highlights
+- Built with Next.js 14 App Router for optimal performance
+- Type-safe development with TypeScript
+- Modern UI components with shadcn/ui and Tailwind CSS v4
+- Serverless API routes for scalable backend operations
+- Efficient state management with React hooks
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+ and pnpm
+- Google Gemini API key
+- (Optional) SerpAPI key for enhanced product search
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/shopgpt.git
+   cd shopgpt
+   ```
+
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+3. Create a `.env.local` file and add your API keys:
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key
+   NEXT_PUBLIC_SERPAPI_KEY=your_serpapi_key  # Optional
+   ```
+
+4. Run the development server:
+   ```bash
+   pnpm dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 🛠 Tech Stack
 
-- **Framework**: Next.js 14 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS v4
-- **UI Components**: Custom components with shadcn/ui foundation
+- **Frontend**: Next.js 14, React 19, TypeScript
+- **Styling**: Tailwind CSS v4, CSS Modules
+- **UI Components**: shadcn/ui, Radix UI Primitives
 - **Icons**: Lucide React
-- **State Management**: React hooks with custom useChat hook
-- **API**: Next.js API routes with intelligent response logic
+- **AI/ML**: Google Gemini API
+- **Product Data**: SerpAPI (for product search)
+- **Deployment**: Vercel (recommended)
 
 ## 📁 Project Structure
 
-\`\`\`
-├── app/
-│   ├── api/
-│   │   └── processQuery/
-│   │       └── route.ts          # Main API endpoint
-│   ├── globals.css               # Global styles and design tokens
-│   ├── layout.tsx               # Root layout with fonts
-│   └── page.tsx                 # Main chat interface
-├── components/
-│   └── chat/
-│       ├── chat-header.tsx      # App header with logo
-│       ├── chat-input.tsx       # Message input component
+```
+├── app/                          # Next.js 14 app directory
+│   ├── api/                      # API routes
+│   │   ├── processQuery/        # Main chat endpoint
+│   │   ├── productDetails/      # Product details endpoint
+│   │   └── productResearch/     # Product research endpoint
+│   ├── agent/                   # AI agent implementations
+│   ├── globals.css              # Global styles
+│   └── layout.tsx               # Root layout
+├── components/                  # Reusable components
+│   ├── chat/                    # Chat interface components
+│   ├── ui/                      # UI primitives
+│   └── theme/                   # Theme provider
+├── lib/                         # Utility functions
+├── public/                      # Static assets
+└── styles/                      # Global styles
+```
+
+## 🌟 Getting Started with Development
+
+1. **Environment Setup**
+   - Copy `.env.example` to `.env.local`
+   - Add your API keys
+   - Run `pnpm install` to install dependencies
+
+2. **Development Commands**
+   ```bash
+   # Start development server
+   pnpm dev
+
+   # Build for production
+   pnpm build
+
+   # Run production build
+   pnpm start
+
+   # Run linter
+   pnpm lint
+
+   # Run type checker
+   pnpm type-check
+   ```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgements
+
+- [Next.js](https://nextjs.org/) for the amazing React framework
+- [Gemini AI](https://ai.google.dev/) for the powerful AI capabilities
+- [shadcn/ui](https://ui.shadcn.com/) for the beautiful component library
+- [Vercel](https://vercel.com/) for the deployment platform
+
+---
+
+Made with ❤️ by [Your Name] | [GitHub](https://github.com/yourusername) | [Twitter](https://twitter.com/yourhandle)
 │       ├── error-banner.tsx     # Error display component
 │       ├── loading-indicator.tsx # Typing animation
 │       ├── message-bubble.tsx   # Individual message display
