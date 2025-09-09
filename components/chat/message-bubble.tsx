@@ -1,6 +1,7 @@
 import { ProductGrid } from "./product-grid"
 import { OptionsGrid } from "./options-grid"
 import type { Message } from "@/types/chat"
+import ReactMarkdown from 'react-markdown'
 
 interface MessageBubbleProps {
   message: Message
@@ -51,7 +52,9 @@ export function MessageBubble({ message, onOptionClick, onSendMessage, onAddDire
             : "glass-message text-card-foreground"
         }`}
       >
-        <p className="text-sm leading-relaxed">{message.content}</p>
+        <div className="text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none">
+          <ReactMarkdown>{message.content}</ReactMarkdown>
+        </div>
 
         {!isUser && isProductMessage && message.products && (
           <div className="mt-4">

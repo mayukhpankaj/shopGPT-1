@@ -37,11 +37,12 @@ export function Drawer({ isOpen, onClose, children }: DrawerProps) {
             className="object-contain"
             onContextMenu={(e) => e.preventDefault()}
           />
+          <h2 className="text-xl font-light">ShopGPT</h2>
           <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
             onClick={onClose}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 hover:bg-gray-300"
           >
             <PanelLeft className="h-3 w-3" />
           </Button>

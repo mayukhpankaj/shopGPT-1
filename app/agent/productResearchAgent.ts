@@ -20,9 +20,13 @@ export async function researchProduct({ product_link, product_name }: ProductRes
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [
-        `Summarise the product, its features, its best price and Rating where the product stands in rating on scale of 1 to 5, also summarise the feedback by customers.
+        ` You are a Research agent for Shopping app. Always send text in markdown format.
+        Your task is to Summarise the product, its features, its best price and Rating where the product stands in rating on scale of 1 to 5,
+         also summarise the feedback by customers.
 
-here is the product Link ${product_link}`,
+         Example: Use proper Heading and Subheading, lists and proper formatting
+         
+         here is the product Link for url context ${product_link}`,
       ],
       config: {
         tools: [{urlContext: {}}],

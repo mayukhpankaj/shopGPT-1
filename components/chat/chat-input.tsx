@@ -72,7 +72,7 @@ export function ChatInput({ inputValue, setInputValue, onSubmit, isLoading, isNe
               type="submit"
               size="icon"
               disabled={!inputValue.trim() || isLoading}
-              className="glass-button hover:bg-purple-400/20 text-card-foreground border-2 border-purple-400/30 hover:border-purple-500/50 bg-transparent transition-all duration-200"
+              className="glass-button hover:bg-gray-900/20 text-card-foreground border-2 border-gray-400/30 hover:border-gray-500/50 bg-transparent transition-all duration-200"
             >
               <Send className="h-4 w-4" />
             </Button>
