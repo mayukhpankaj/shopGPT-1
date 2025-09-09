@@ -11,10 +11,13 @@ interface ProductGridProps {
   products: ProductType[]
   onViewProduct?: (product: ProductType) => void
   onAddToCart?: (product: ProductType) => void
+  onSendMessage?: (message: string) => void
+  onAddDirectMessage?: (content: string, role: "user" | "model") => void
+  onSetResearchLoading?: (loading: boolean) => void
   className?: string
 }
 
-export function ProductGrid({ products, onViewProduct, onAddToCart, className = "" }: ProductGridProps) {
+export function ProductGrid({ products, onViewProduct, onAddToCart, onSendMessage, onAddDirectMessage, onSetResearchLoading, className = "" }: ProductGridProps) {
   if (!products || products.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
@@ -30,7 +33,10 @@ export function ProductGrid({ products, onViewProduct, onAddToCart, className = 
           key={uuidv4()} 
           product={product} 
           onViewProduct={onViewProduct} 
-          onAddToCart={onAddToCart} 
+          onAddToCart={onAddToCart}
+          onSendMessage={onSendMessage}
+          onAddDirectMessage={onAddDirectMessage}
+          onSetResearchLoading={onSetResearchLoading}
         />
       ))}
     </div>

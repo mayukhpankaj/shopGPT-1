@@ -5,9 +5,12 @@ import type { Message } from "@/types/chat"
 interface MessageBubbleProps {
   message: Message
   onOptionClick?: (option: string) => void
+  onSendMessage?: (message: string) => void
+  onAddDirectMessage?: (content: string, role: "user" | "model") => void
+  onSetResearchLoading?: (loading: boolean) => void
 }
 
-export function MessageBubble({ message, onOptionClick }: MessageBubbleProps) {
+export function MessageBubble({ message, onOptionClick, onSendMessage, onAddDirectMessage, onSetResearchLoading }: MessageBubbleProps) {
   const handleViewProduct = (product: any) => {
     console.log("View product:", product)
     // TODO: Implement product view functionality
@@ -52,7 +55,7 @@ export function MessageBubble({ message, onOptionClick }: MessageBubbleProps) {
 
         {!isUser && isProductMessage && message.products && (
           <div className="mt-4">
-            <ProductGrid products={message.products} onViewProduct={handleViewProduct} onAddToCart={handleAddToCart} />
+            <ProductGrid products={message.products} onViewProduct={handleViewProduct} onAddToCart={handleAddToCart} onSendMessage={onSendMessage} onAddDirectMessage={onAddDirectMessage} onSetResearchLoading={onSetResearchLoading} />
           </div>
         )}
       </div>

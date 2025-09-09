@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useState } from "react"
 import { MessageBubble } from "@/components/chat/message-bubble"
 import { ChatInput } from "@/components/chat/chat-input"
 import { ChatHeader } from "@/components/chat/chat-header"
@@ -17,6 +18,7 @@ export default function ChatInterface() {
     error,
     messagesEndRef,
     sendMessage,
+    addDirectMessage,
     clearChat,
     retryLastMessage,
     isNewThread,
@@ -26,6 +28,8 @@ export default function ChatInterface() {
     switchThread,
     deleteThread,
   } = useChat()
+
+  const [isResearchLoading, setIsResearchLoading] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -61,10 +65,10 @@ export default function ChatInterface() {
         {messages.length > 0 && (
           <div className="max-w-4xl mx-auto p-4 space-y-6">
             {messages.map((message) => (
-              <MessageBubble key={message.id} message={message} onOptionClick={handleOptionClick} />
+              <MessageBubble key={message.id} message={message} onOptionClick={handleOptionClick} onSendMessage={sendMessage} onAddDirectMessage={addDirectMessage} onSetResearchLoading={setIsResearchLoading} />
             ))}
 
-            {isLoading && <LoadingIndicator />}
+            {(isLoading || isResearchLoading) && <LoadingIndicator />}
 
             <div ref={messagesEndRef} />
           </div>

@@ -35,6 +35,7 @@ export function Drawer({ isOpen, onClose, children }: DrawerProps) {
             width={32} 
             height={32}
             className="object-contain"
+            onContextMenu={(e) => e.preventDefault()}
           />
           <Button
             variant="ghost"

@@ -34,12 +34,16 @@ interface ProductCardProps {
   product: Product | SerpProduct;
   onViewProduct?: (product: Product | SerpProduct) => void;
   onAddToCart?: (product: Product | SerpProduct) => void;
+  onSendMessage?: (message: string) => void;
+  onAddDirectMessage?: (content: string, role: "user" | "model") => void;
+  onSetResearchLoading?: (loading: boolean) => void;
 }
 
-export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCardProps) {
+export function ProductCard({ product, onViewProduct, onAddToCart, onSendMessage, onAddDirectMessage, onSetResearchLoading }: ProductCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoadingDetails, setIsLoadingDetails] = useState(false)
   const [isShowingLoadingOverlay, setIsShowingLoadingOverlay] = useState(false)
+  const [isResearching, setIsResearching] = useState(false)
   const [detailedProduct, setDetailedProduct] = useState<any>(null)
   const [isHovered, setIsHovered] = useState(false)
   const productDetailsCache = useRef<{ [key: string]: any }>({})
@@ -281,7 +285,7 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
       
       {/* Floating action bubble */}
       <div 
-        className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full shadow-lg p-1 transition-all duration-300 ${
+        className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-10 bg-gray-200 dark:bg-gray-800/80 backdrop-blur-md rounded-full shadow-lg p-1 transition-all duration-300 ${
           isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
         }`}
         onMouseEnter={() => setIsHovered(true)}
@@ -292,7 +296,7 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
           <Button 
             variant="outline" 
             size="sm" 
-            className="rounded-full text-gray-600 text-xs h-8 px-3 flex items-center gap-1 bg-white dark:bg-gray-800 hover:bg-blue-300 dark:hover:bg-gray-700 transition-colors"
+            className="rounded-full text-gray-600 text-xs h-8 px-3 flex items-center gap-1 bg-white dark:bg-gray-800 hover:bg-gray-600 dark:hover:bg-gray-700 transition-colors"
             onClick={(e) => {
               e.stopPropagation();
               // Handle ask action
@@ -305,11 +309,51 @@ export function ProductCard({ product, onViewProduct, onAddToCart }: ProductCard
           <Button 
             variant="outline" 
             size="sm" 
-            className="rounded-full text-gray-600 text-xs h-8 px-3 flex items-center gap-1 bg-white dark:bg-gray-800 hover:bg-blue-300 dark:hover:bg-gray-700 transition-colors"
-            onClick={(e) => {
+            className="rounded-full text-gray-600 text-xs h-8 px-3 flex items-center gap-1 bg-white dark:bg-gray-800 hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors"
+            onClick={async (e) => {
               e.stopPropagation();
-              // Handle research action
-              console.log('Research:', formattedProduct.name);
+              
+              if (!onAddDirectMessage || !onSetResearchLoading) return;
+              
+              // Set loading state to show "Thinking..." indicator
+              onSetResearchLoading(true);
+              
+              // Add user message for research directly (bypassing processQuery)
+              const userMessage = `Research about ${formattedProduct.name}`;
+              onAddDirectMessage(userMessage, "user");
+              
+              try {
+                // Call the product research API
+                const response = await fetch('/api/productResearch', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    product_link: formattedProduct.url || formattedProduct.product_link,
+                    product_name: formattedProduct.name
+                  })
+                });
+                
+                if (response.ok) {
+                  const data = await response.json();
+                  console.log('Research Response:', data.research);
+                  
+                  // Add AI response message directly (bypassing processQuery)
+                  if (data.research) {
+                    onAddDirectMessage(`Here's what I found about ${data.product_name}:\n\n${data.research}`, "model");
+                  }
+                } else {
+                  console.error('Research failed:', response.statusText);
+                  onAddDirectMessage(`Sorry, I couldn't research ${formattedProduct.name} right now. Please try again later.`, "model");
+                }
+              } catch (error) {
+                console.error('Research error:', error);
+                onAddDirectMessage(`Sorry, I encountered an error while researching ${formattedProduct.name}. Please try again later.`, "model");
+              } finally {
+                // Clear loading state
+                onSetResearchLoading(false);
+              }
             }}
           >
             <Sparkles className="h-3.5 w-3.5 mr-1" />

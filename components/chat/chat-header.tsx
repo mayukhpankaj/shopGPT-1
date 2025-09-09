@@ -48,8 +48,11 @@ export function ChatHeader({
             width={32} 
             height={32}
             className="object-contain"
+            onContextMenu={(e) => e.preventDefault()}
           />
-          <h6 className="text-xl text-gray-700">ShopGPT</h6>
+          {!hasMessages && (
+            <h6 className="text-xl text-gray-700">ShopGPT</h6>
+          )}
         </div>
 
         {hasMessages && (

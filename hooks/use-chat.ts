@@ -23,6 +23,7 @@ interface UseChatReturn {
   
   // Message actions
   sendMessage: (message: string) => Promise<void>
+  addDirectMessage: (content: string, role: "user" | "model") => void
   clearChat: () => void
   retryLastMessage: () => void
   
@@ -357,6 +358,33 @@ export function useChat(): UseChatReturn {
     )
   }, [currentThreadId])
 
+  const addDirectMessage = useCallback((content: string, role: "user" | "model") => {
+    // Create a new thread if this is the first message
+    const threadId = currentThreadId || createNewThread()
+    const now = new Date().toISOString()
+
+    const message: Message = {
+      id: `msg-${Date.now()}-${Math.random()}`,
+      threadId,
+      role,
+      content,
+      type: "text",
+      createdAt: now,
+      updatedAt: now
+    }
+
+    setMessages(prev => [...prev, message])
+    
+    // Update thread's updatedAt
+    setThreads(prev => 
+      prev.map(t => 
+        t.id === threadId 
+          ? { ...t, updatedAt: now } 
+          : t
+      )
+    )
+  }, [currentThreadId, createNewThread])
+
   const retryLastMessage = useCallback(() => {
     if (!currentThreadId) return
     
@@ -382,6 +410,7 @@ export function useChat(): UseChatReturn {
     
     // Message actions
     sendMessage,
+    addDirectMessage,
     clearChat,
     retryLastMessage,
     

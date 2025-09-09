@@ -48,6 +48,7 @@ export function ChatInput({ inputValue, setInputValue, onSubmit, isLoading, isNe
               width={64} 
               height={64}
               className="mx-auto mb-4 object-contain"
+              onContextMenu={(e) => e.preventDefault()}
             />
             <h2 className="text-2xl font-semibold text-gray-400 mb-2">Let shoppin Begin !</h2>
             {/* <p className="text-muted-foreground">Ask me anything or request product recommendations</p> */}
